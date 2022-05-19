@@ -53,12 +53,12 @@ public class Semester {
 	/**
 	 * Create a new semester object.
 	 * @param code  ODU semester code, form is YYYYN0, where YYYY is the year
-	 *     in which the Fall semester takes place, N=1 for Fall, =2, for 
+	 *     in which the Fall semester takes place, N=1 for Fall, =2 for 
 	 *     Spring, and =3 for Summer.
 	 * @param registration   date on which pre-registration for this semester 
 	 *       began
 	 * @param frozen   date after which students may no longer enroll in
-	 *          additional course for this semester
+	 *          additional courses for this semester
 	 */
 	public Semester (int code, LocalDate registration, LocalDate frozen) {
 		semesterCode = code;
@@ -142,9 +142,9 @@ public class Semester {
 	 * Adds an enrollment data point for the semester.
 	 * @param course identifier for the course being tracked 
 	 * @param date date for enrollment point (dates prior to 
-	 *     getStartOfPreregistration() or adter getAddDeadLine() are
+	 *     getStartOfPreregistration() or after getAddDeadLine() are
 	 *     ignored.
-	 * @param enroll nukmber of students enrolled at the end of the day on date
+	 * @param enroll number of students enrolled at the end of the day on date
 	 */
 	public void addPoint(String course, LocalDate date, int enroll) {
 		List<DataPoint> points = history.get(course);

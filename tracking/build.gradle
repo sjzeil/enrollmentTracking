@@ -9,19 +9,14 @@ application { //Allows  ./gradlew run --args=path-to-test-data
 
 repositories {
         mavenCentral()
-        ivy { 
-            url 'https://www.cs.odu.edu/~zeil/ivyrepo'
-        }
 }
 
 
 dependencies {
-    implementation 'com.opencsv:opencsv:3.4+'
+    implementation 'com.opencsv:opencsv:latest.integration'
     
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:latest.integration'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
     testImplementation 'org.hamcrest:hamcrest-library:latest.integration'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:latest.integration' // for Eclipse
-    //testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:latest.integration' // for Eclipse
 }
 
 test {
@@ -34,6 +29,7 @@ jar {
            'Implementation-Version': '1.0',
             'Main-Class': 'edu.odu.cs.zeil.enrollment.updateHistory'
     }
-    from { configurations.compile.collect {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect {
          it.isDirectory() ? it : zipTree(it) } }
 }

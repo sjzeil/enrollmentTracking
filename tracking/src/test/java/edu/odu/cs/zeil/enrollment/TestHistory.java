@@ -4,7 +4,7 @@
 package edu.odu.cs.zeil.enrollment;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+//import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.Month;
-import java.util.GregorianCalendar;
 
 /**
  * @author zeil

@@ -12,10 +12,21 @@ public class Interpolator {
         points = new ArrayList<>();
     }
 
-    public void add(DataPoint dataPoint) {
+    public void set(DataPoint dataPoint) {
         int pos = Collections.binarySearch(points, dataPoint);
         if (pos >= 0) {
             points.set(pos, dataPoint);
+        } else {
+            pos = -(pos + 1);
+            points.add(pos, dataPoint);
+        }
+    }
+
+    public void add(DataPoint dataPoint) {
+        int pos = Collections.binarySearch(points, dataPoint);
+        if (pos >= 0) {
+            DataPoint oldPoint = points.get(pos);
+            points.set(pos, new DataPoint(dataPoint.x(), dataPoint.y() + oldPoint.y()));
         } else {
             pos = -(pos + 1);
             points.add(pos, dataPoint);
@@ -45,7 +56,7 @@ public class Interpolator {
                 double y1 = d1.y();
                 double y2 = d2.y();
 
-                return x1 + (x - x1) * (y2 - y1) / (x2 - x1);
+                return y1 + (x - x1) * (y2 - y1) / (x2 - x1);
 
             }
         }

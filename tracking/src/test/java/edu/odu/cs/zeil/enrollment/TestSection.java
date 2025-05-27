@@ -49,13 +49,14 @@ class TestSection {
         int enr = 25;
         String link = "A2";
         String xList = "SC001";
+        char campus = 'B';
         String  time = "TBA";
         String days = "MTWRF";
         String bldg = "WC2";
         String room = "";
         String instructor = "staff";
 
-        Section cs115 = new Section(crn, subj, num, title, cr, enr, link, xList, time, days, bldg, room, instructor);
+        Section cs115 = new Section(crn, subj, num, title, cr, enr, link, xList, campus, time, days, bldg, room, instructor);
         assertThat(cs115.building(), is(bldg));
         assertThat(cs115.credits(), is(cr));
         assertThat(cs115.crn(), is(crn));
@@ -91,6 +92,7 @@ class TestSection {
         int enr = 17;
         String link = "";
         String xList = "";
+        char campus = 'A';
         String  time = "1000-1050AM";
         String days = "F";
         String bldg = "DRGS";
@@ -107,6 +109,7 @@ class TestSection {
         assertThat(cs115.number(), is(num));
         assertThat(cs115.room(), is(room));
         assertThat(cs115.subject(), is(subj));
+        assertThat(cs115.campus(), is(campus));
         assertThat(cs115.time(), is(time));
         assertThat(cs115.title(), is(title));
         assertThat(cs115.toString(), containsString(subj));

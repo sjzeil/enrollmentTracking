@@ -57,6 +57,43 @@ class TestSemesterEnrollment {
         int laterReg = enroll.getTotal(lateSummer);
         assertThat(laterReg, greaterThan(intermReg));
         assertThat(laterReg, lessThan(finalReg));
+
+        int uGTotal = enroll.getUGTotal(addDrop); 
+        assertThat(uGTotal, is(97*3));
+        int gTotal = enroll.getGTotal(addDrop); 
+        assertThat(gTotal, is(41*3));
+
+	}
+
+    @Test
+	void testOnCampusEnroll() {
+        
+        SemesterEnrollment enroll = new SemesterEnrollment(202210, fall22);
+        assertThat(enroll.getStartOfPreregistration(), is(registration));
+        assertThat(enroll.getAddDeadline(), is(addDrop));
+
+        assertThat(enroll.getOnCampusUG(registration), is(6*3));
+
+        int intermReg = enroll.getOnCampusG(summer);
+        assertThat(intermReg, is(0*3));
+
+	}
+
+    @Test
+	void testDistanceEnroll() {
+        
+        SemesterEnrollment enroll = new SemesterEnrollment(202210, fall22);
+        assertThat(enroll.getStartOfPreregistration(), is(registration));
+        assertThat(enroll.getAddDeadline(), is(addDrop));
+
+        assertThat(enroll.getHamptonRoadsUG(addDrop), is(38*3));
+        assertThat(enroll.getVirginiaUG(addDrop), is(19*3));
+        assertThat(enroll.getOutOfStateUG(addDrop), is(8*3));
+
+        assertThat(enroll.getHamptonRoadsG(addDrop), is(24*3));
+        assertThat(enroll.getVirginiaG(addDrop), is(15*3));
+        assertThat(enroll.getOutOfStateG(addDrop), is(2*3));
+
 	}
 
    

@@ -95,17 +95,11 @@ public class Semester {
 	 *      numDaysBetween(getAddDeadline,getStartOfRegistration()) 
 	 */
 	public double enrollmentCompletion(LocalDate date) {
-		if (date.isAfter(addDeadline)) {
-			return 1.0;
-		} else if (startOfPreregistration.isAfter(date)) {
-			return 0.0;
-		} else {
 			long semesterLen = startOfPreregistration.until(addDeadline, 
 					ChronoUnit.DAYS);
 			long elapsed = startOfPreregistration.until(date, ChronoUnit.DAYS);
 			double fraction = (double)(elapsed+1) / (double)(semesterLen + 1);
 			return fraction;
-		}
 	}
 	
 	

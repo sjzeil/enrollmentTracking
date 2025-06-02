@@ -160,4 +160,20 @@ public class SemesterEnrollment {
         return getOnCampusG(date) + getHamptonRoadsG(date) + getVirginiaG(date) + getOutOfStateG(date);
     }
 
+    public String description() {
+        return semester.description();
+    }
+
+    public double enrollmentCompletion(LocalDate date) {
+        return semester.enrollmentCompletion(date);
+    }
+
+    public LocalDate getRegistrationDate() {
+        return semester.getStartOfPreregistration();
+    }
+
+    public LocalDate getAddDropDate() {
+        return semester.getAddDeadline();
+    }
+
 }

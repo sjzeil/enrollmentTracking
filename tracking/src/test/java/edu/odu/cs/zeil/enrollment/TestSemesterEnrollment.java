@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -95,6 +96,25 @@ class TestSemesterEnrollment {
         assertThat(enroll.getOutOfStateG(addDrop), is(2*3));
 
 	}
+
+    @Test
+	void testCourseEnroll() {
+        
+        SemesterEnrollment enroll = new SemesterEnrollment(202210, fall22);
+        assertThat(enroll.getStartOfPreregistration(), is(registration));
+        assertThat(enroll.getAddDeadline(), is(addDrop));
+
+        Iterator<String> it = enroll.iterator();
+        assertThat(it.hasNext(), is(true));
+        assertThat(it.next(), is("CS361"));
+        assertThat(it.next(), is("CS620"));
+        assertThat(it.hasNext(), is(false));
+
+        assertThat(enroll.getCourse("CS361", addDrop), is(97*3));
+        assertThat(enroll.getCourse("CS620", addDrop), is(41*3));
+        assertThat(enroll.getCourse("CS999", addDrop), is(0));
+	}
+
 
    
 }

@@ -47,7 +47,12 @@ public class EnrollmentComparison {
     }
 
     private void generateTable() {
-        print("<table border='1'><tr><th colspan='12'>Comparing " + currentSemester.description() + " to "
+        generateSummaryTable();
+        generateCourseTable();
+    }
+
+    private void generateSummaryTable() {
+        print("<table border='1'><tr><th colspan='12'>Comparing credit hours: " + currentSemester.description() + " to "
                 + priorSemester.description() + "</th></tr>");
         print("<th></th><th colspan='5'>UGrad</th><th colspan='5'>Grad</th><th>Combined</th>");
         print("<tr><th> </th><th>On-campus</th><th>Remote</th><th>Virginia</th><th>Out of State</th><th>UG Total</th>");
@@ -103,8 +108,8 @@ public class EnrollmentComparison {
     private String pct(int v1, int v0) {
         double change;
         if (v0 != 0) {
-            change = 100.0 * ((double)(v1 - v0))/v0;
-            return String.format("%.1f",change) + '%';
+            change = 100.0 * ((double) (v1 - v0)) / v0;
+            return String.format("%.1f", change) + '%';
         } else {
             return "---";
         }
@@ -120,6 +125,49 @@ public class EnrollmentComparison {
 
     private void print(String string) {
         System.out.println(string);
+    }
+
+    private void generateCourseTable() {
+        double fraction = currentSemester.enrollmentCompletion(today);
+        LocalDate priorReg = priorSemester.getRegistrationDate();
+        LocalDate priorAddDrop = priorSemester.getAddDropDate();
+        LocalDate addDrop = currentSemester.getAddDropDate();
+        long priorDateRange = ChronoUnit.DAYS.between(priorReg, priorAddDrop);
+        LocalDate comparativeDate = priorReg.plusDays(Math.round(fraction * priorDateRange));
+
+        print("<br/><table border='1'><tr><th colspan='12'>Comparing enrollments: " + currentSemester.description() + " to "
+                + priorSemester.description() + "</th></tr>");
+        print("<tr><th>Course</th><th>" + today + "</th><th>" + comparativeDate + "</th><th>Change</th>");
+        if (fraction < 1.0) {
+            print("<th>" + addDrop + "<br/>(projected)</th>");
+        }
+        print("</tr>");
+
+        for (String course : currentSemester) {
+            printDetailLine(course, currentSemester, priorSemester, today, comparativeDate, fraction < 1.0);
+        }
+        print("</table>");
+    }
+
+    private void printDetailLine(String course, SemesterEnrollment currentSemester,
+            SemesterEnrollment priorSemester, LocalDate today, LocalDate priorDate, boolean project) {
+        LocalDate priorAddDrop = priorSemester.getAddDropDate();
+        LocalDate addDrop = currentSemester.getAddDropDate();
+        int current = currentSemester.getCourse(course, today) / Math.max(1, currentSemester.getCredits(course));
+        int prior = priorSemester.getCourse(course, priorDate) / Math.max(1, priorSemester.getCredits(course));
+
+        String change = pct(current, prior);
+        print("<tr>" + td(course) + td(current) + td(prior) + td(change));
+        if (project) {
+            int projected = current;
+            if (prior > 0) {
+                double ratio = (double) (current) / prior;
+                int priorAddDropEnroll = priorSemester.getCourse(course, priorAddDrop) / Math.max(1, priorSemester.getCredits(course));
+                projected = (int) Math.round(ratio * priorAddDropEnroll);
+            }
+            print(td(projected));
+        }
+        print("</tr>");
     }
 
 }

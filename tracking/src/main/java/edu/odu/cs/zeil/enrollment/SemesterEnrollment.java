@@ -10,16 +10,20 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
-public class SemesterEnrollment {
+public class SemesterEnrollment implements Iterable<String>{
 
     private Semester semester;
     private Interpolator total;
     private Map<Character, Interpolator> byCampus;
+    private Map<String, Interpolator> byCourse;
+    private Map<String, Integer> credits;
     private LocalDate registration;
     private LocalDate addDrop;
 
@@ -28,6 +32,8 @@ public class SemesterEnrollment {
         semester = new Semester(semesterCode, registration, addDrop);
         total = new Interpolator();
         byCampus = new HashMap<>();
+        byCourse = new TreeMap<>();
+        credits = new HashMap<>();
         readEnrollmentDetails(historyPath);
     }
 
@@ -43,13 +49,21 @@ public class SemesterEnrollment {
             LocalDate localDate = LocalDate.parse(name, DateTimeFormatter.ISO_DATE);
             double x = semester.enrollmentCompletion(localDate);
             try (CSVReader reader = new CSVReader(new FileReader(csvFile))) {
-                String[] headers = reader.readNext();
+                reader.readNext(); // read & discard the headers
                 String[] sectionFields = reader.readNext();
                 while (sectionFields != null) {
                     Section section = Section.loadFromCSV(sectionFields);
                     int y = section.enrollment() * section.credits();
                     if (y > 0) {
                         processEnrollment(section, x);
+                    }
+                    if (section.credits() > 0) {
+                        String course = section.subject() + section.number();
+                        Integer cr = credits.get(course);
+                        if (cr == null) {
+                            cr = 0;
+                        }
+                        credits.put(course, Math.max(section.credits(), cr));
                     }
                     sectionFields = reader.readNext();
                 }
@@ -72,6 +86,14 @@ public class SemesterEnrollment {
             byCampus.put(campus, byCampusData);
         }
         byCampusData.add(new DataPoint(x, y));
+
+        String course = section.subject() + section.number();
+        Interpolator byCourseData = byCourse.get(course);
+        if (byCourseData == null) {
+            byCourseData = new Interpolator();
+            byCourse.put(course, byCourseData);
+        }
+        byCourseData.add(new DataPoint(x, y));
     }
 
     private void readSemesterInfo(int semesterCode, Path historyPath) {
@@ -174,6 +196,27 @@ public class SemesterEnrollment {
 
     public LocalDate getAddDropDate() {
         return semester.getAddDeadline();
+    }
+
+    // iterates over courses
+    public Iterator<String> iterator() {
+        return byCourse.keySet().iterator();
+    }
+
+    public int getCourse(String courseName, LocalDate date) {
+        Interpolator course = byCourse.get(courseName);
+        if (course == null)
+            return 0;
+        double fraction = semester.enrollmentCompletion(date);
+        return (int)Math.round(course.get(fraction));
+    }
+
+    public int getCredits(String course) {
+        Integer cr = credits.get(course);
+        if (cr != null)
+            return cr;
+        else
+            return 0;
     }
 
 }

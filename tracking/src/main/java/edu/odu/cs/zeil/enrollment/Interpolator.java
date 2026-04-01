@@ -39,7 +39,8 @@ public class Interpolator {
         if (pos >= 0) {
             return points.get(pos).y();
         } else if (points.size() <= 2) {
-            throw new IndexOutOfBoundsException();
+            return 0.0;
+            //throw new IndexOutOfBoundsException();
         } else {
             int p2 = -(pos + 1);
             int p1 = p2 - 1;

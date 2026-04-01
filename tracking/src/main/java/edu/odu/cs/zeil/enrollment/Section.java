@@ -10,7 +10,7 @@ package edu.odu.cs.zeil.enrollment;
  * @author zeil
  *
  */
-record Section (int crn, String subject, String number, String title, int credits, int enrollment, String link, String xList, char campus, String time, String days, String building, String room, String instructor) {
+record Section (int crn, String subject, String number, String title, double credits, int enrollment, String link, String xList, char campus, String time, String days, String building, String room, String instructor) {
 
     public static Section loadFromCSV(String[] fields) {
         // Seats,CRN,SUBJ,CRSE,TITLE,CR HRS,XLST CAP,ENR,LINK,XLST GROUP,SCHED TYPE,,CAMPUS,INSM,PRINT?,TIME,DAYS,BLDG,ROOM,OVERRIDE,INSTRUCTOR,,OVERALL CAP,OVERALL ENR,,,PTRM START,PTRM END,WL CAP,WL,WL REMAIN,NOTES,COMMENTS,COLL
@@ -18,7 +18,7 @@ record Section (int crn, String subject, String number, String title, int credit
         String subj = fields[2];
         String num = fields[3];
         String title = fields[4];
-        int cr = Integer.parseInt(fields[5]);
+        double cr = Double.parseDouble(fields[5]);
         int enr = Integer.parseInt(fields[7]);
         String link = fields[8];
         String xList = fields[9];

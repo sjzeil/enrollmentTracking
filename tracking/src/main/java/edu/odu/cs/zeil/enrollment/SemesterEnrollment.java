@@ -23,7 +23,7 @@ public class SemesterEnrollment implements Iterable<String>{
     private Interpolator total;
     private Map<Character, Interpolator> byCampus;
     private Map<String, Interpolator> byCourse;
-    private Map<String, Integer> credits;
+    private Map<String, Double> credits;
     private LocalDate registration;
     private LocalDate addDrop;
 
@@ -53,15 +53,15 @@ public class SemesterEnrollment implements Iterable<String>{
                 String[] sectionFields = reader.readNext();
                 while (sectionFields != null) {
                     Section section = Section.loadFromCSV(sectionFields);
-                    int y = section.enrollment() * section.credits();
+                    double y = section.enrollment() * section.credits();
                     if (y > 0) {
                         processEnrollment(section, x);
                     }
                     if (section.credits() > 0) {
                         String course = section.subject() + section.number();
-                        Integer cr = credits.get(course);
+                        Double cr = credits.get(course);
                         if (cr == null) {
-                            cr = 0;
+                            cr = 0.0;
                         }
                         credits.put(course, Math.max(section.credits(), cr));
                     }
@@ -211,8 +211,8 @@ public class SemesterEnrollment implements Iterable<String>{
         return (int)Math.round(course.get(fraction));
     }
 
-    public int getCredits(String course) {
-        Integer cr = credits.get(course);
+    public double getCredits(String course) {
+        Double cr = credits.get(course);
         if (cr != null)
             return cr;
         else

@@ -28,6 +28,16 @@ public class EnrollmentComparison {
         today = LocalDate.now();
     }
 
+        public EnrollmentComparison(int semesterCode, int priorSemesterCode) {
+        currentSemesterCode = semesterCode;
+        Path historicalData = Paths.get("/", "home", "zeil", "secure_html", "courseSchedule", "History");
+        Path currentPath = historicalData.resolve("" + currentSemesterCode);
+        currentSemester = new SemesterEnrollment(currentSemesterCode, currentPath);
+        Path priorPath = historicalData.resolve("" + priorSemesterCode);
+        priorSemester = new SemesterEnrollment(priorSemesterCode, priorPath);
+        today = LocalDate.now();
+    }
+
     /**
      * Run the enrollment prediction. Predicts final enrollment for a semester with
      * registration underway based upon data from the two prior years.
@@ -36,13 +46,17 @@ public class EnrollmentComparison {
      *             e.g.,
      */
     public static void main(String[] args) {
-        if (args.length != 1) {
-            System.err.println("Usage: java ... edu.odu.cs.zeil.enrollment.EnrollmentComparison semester-code");
+        if (args.length < 1 || args.length > 2) {
+            System.err.println("Usage: java ... edu.odu.cs.zeil.enrollment.EnrollmentComparison semester-code [priorSemester]");
             System.exit(1);
         }
         int semesterCode = Integer.parseInt(args[0]);
 
-        new EnrollmentComparison(semesterCode).generateTable();
+        EnrollmentComparison enr = (args.length == 1) ?
+            new EnrollmentComparison(semesterCode) :
+            new EnrollmentComparison(semesterCode, Integer.parseInt(args[1]));
+        
+        enr.generateTable();
 
     }
 
@@ -105,6 +119,16 @@ public class EnrollmentComparison {
         print("</tr>");
     }
 
+    private String pct(double v1, double v0) {
+        double change;
+        if (v0 != 0.0) {
+            change = 100.0 * (v1 - v0) / v0;
+            return String.format("%.1f", change) + '%';
+        } else {
+            return "---";
+        }
+    }
+
     private String pct(int v1, int v0) {
         double change;
         if (v0 != 0) {
@@ -113,6 +137,10 @@ public class EnrollmentComparison {
         } else {
             return "---";
         }
+    }
+
+    private String td(double value) {
+        return "<td>" + value + "</td>";
     }
 
     private String td(int value) {
@@ -153,16 +181,16 @@ public class EnrollmentComparison {
             SemesterEnrollment priorSemester, LocalDate today, LocalDate priorDate, boolean project) {
         LocalDate priorAddDrop = priorSemester.getAddDropDate();
         LocalDate addDrop = currentSemester.getAddDropDate();
-        int current = currentSemester.getCourse(course, today) / Math.max(1, currentSemester.getCredits(course));
-        int prior = priorSemester.getCourse(course, priorDate) / Math.max(1, priorSemester.getCredits(course));
+        double current = currentSemester.getCourse(course, today) / Math.max(1, currentSemester.getCredits(course));
+        double prior = priorSemester.getCourse(course, priorDate) / Math.max(1, priorSemester.getCredits(course));
 
         String change = pct(current, prior);
         print("<tr>" + td(course) + td(current) + td(prior) + td(change));
         if (project) {
-            int projected = current;
+            double projected = current;
             if (prior > 0) {
                 double ratio = (double) (current) / prior;
-                int priorAddDropEnroll = priorSemester.getCourse(course, priorAddDrop) / Math.max(1, priorSemester.getCredits(course));
+                double priorAddDropEnroll = priorSemester.getCourse(course, priorAddDrop) / Math.max(1, priorSemester.getCredits(course));
                 projected = (int) Math.round(ratio * priorAddDropEnroll);
             }
             print(td(projected));
